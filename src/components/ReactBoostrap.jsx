@@ -87,6 +87,12 @@ const ReactBoostrap = () => {
   //student add modal hide
   const handleModalHide = () => {
     setModal(false);
+    setInput({
+      name: "",
+      age: "",
+      roll: "",
+      photo: "",
+    });
   };
 
   // student delete
@@ -97,17 +103,21 @@ const ReactBoostrap = () => {
   };
   // student edit modal show
   const handleEditModal = (id) => {
-     setInput(students.find((data) => data.id === id))
+    setInput(students.find((data) => data.id === id));
 
     setEditModalShow(true);
   };
 
   // student edit modal hide
   const handleEditModalHide = () => {
-    setEditModalShow(false)
-  }
-
-
+    setEditModalShow(false);
+    setInput({
+      name: "",
+      age: "",
+      roll: "",
+      photo: "",
+    });
+  };
 
   // protect student reRender
   useEffect(() => {

@@ -31,6 +31,9 @@ const ReactBoostrap = () => {
   // student edit state
   const [editModalShow, setEditModalShow] = useState(false);
 
+  // view modal state
+  const [viewModal, setViewModal] = useState(false)
+
   //student form value taken
   const handleInputValue = (e) => {
     setInput((prevState) => ({
@@ -56,7 +59,7 @@ const ReactBoostrap = () => {
         position: "top-end",
         icon: "success",
         title: "Student has been saved successfuly",
-        showConfirmButton: false,
+        showConfirmButton: true,
         timer: 2000,
       });
       setTimeout(() => {
@@ -119,6 +122,20 @@ const ReactBoostrap = () => {
     });
   };
 
+  // student edit form submit
+  const handleEditForm = async (e) => {
+    e.preventDefault();
+
+    await axios.patch(`http://localhost:7070/students/${input.id}`, input);
+    getAllStudents();
+    handleEditModalHide()
+  };
+
+  // handle view modal show
+  const handleViewModalShow = () => {
+    setViewModal(true)
+  }
+
   // protect student reRender
   useEffect(() => {
     getAllStudents();
@@ -128,7 +145,7 @@ const ReactBoostrap = () => {
     <>
       <Container className="my-5">
         <Row className="justify-content-center">
-          <Col xl={10} sm={10}>
+          <Col xl={10}>
             <Button
               onClick={handleModalShow}
               className="mb-2"
@@ -184,7 +201,7 @@ const ReactBoostrap = () => {
                               >
                                 <FaRegEdit />
                               </Button>
-                              <Button className="me-2" variant="warning">
+                              <Button onClick={handleViewModalShow} className="me-2" variant="warning">
                                 <FaEye />
                               </Button>
                               <Button
@@ -255,7 +272,7 @@ const ReactBoostrap = () => {
           <Modal.Title>Edit Student</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form>
+          <form onSubmit={handleEditForm}>
             <label htmlFor="">Name</label>
             <input
               name="name"
@@ -290,6 +307,15 @@ const ReactBoostrap = () => {
             />
             <Button type="submit">Add</Button>
           </form>
+        </Modal.Body>
+      </Modal>
+      {/* student data view */}
+      <Modal show={viewModal} centered>
+        <Modal.Header>
+          <Modal.Title>Edit Student</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          
         </Modal.Body>
       </Modal>
     </>

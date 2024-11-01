@@ -14,7 +14,7 @@ import { FaEye, FaRegEdit, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 const ReactBoostrap = () => {
-  // modal show hide state
+  // add modal show hide state
   const [modal, setModal] = useState(false);
 
   // form value state
@@ -32,7 +32,7 @@ const ReactBoostrap = () => {
   const [editModalShow, setEditModalShow] = useState(false);
 
   // view modal state
-  const [viewModal, setViewModal] = useState(false)
+  const [viewModal, setViewModal] = useState(false);
 
   //student form value taken
   const handleInputValue = (e) => {
@@ -128,13 +128,19 @@ const ReactBoostrap = () => {
 
     await axios.patch(`http://localhost:7070/students/${input.id}`, input);
     getAllStudents();
-    handleEditModalHide()
+    handleEditModalHide();
   };
 
   // handle view modal show
-  const handleViewModalShow = () => {
-    setViewModal(true)
-  }
+  const handleViewModalShow = (id) => {
+    const viewStu = students.find((data) => data.id === id);
+    setViewModal(true);
+    setStudents(viewStu);
+  };
+  // handle view modal hide
+  const handleViewModalHide = () => {
+    setViewModal(false);
+  };
 
   // protect student reRender
   useEffect(() => {
@@ -201,7 +207,11 @@ const ReactBoostrap = () => {
                               >
                                 <FaRegEdit />
                               </Button>
-                              <Button onClick={handleViewModalShow} className="me-2" variant="warning">
+                              <Button
+                                onClick={() => handleViewModalShow(item.id)}
+                                className="me-2"
+                                variant="warning"
+                              >
                                 <FaEye />
                               </Button>
                               <Button
@@ -310,12 +320,25 @@ const ReactBoostrap = () => {
         </Modal.Body>
       </Modal>
       {/* student data view */}
-      <Modal show={viewModal} centered>
+      <Modal show={viewModal} onHide={handleViewModalHide} centered>
         <Modal.Header>
-          <Modal.Title>Edit Student</Modal.Title>
+          <Modal.Title>View Student</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          
+          <Row>
+            {students.map((item, index) => {
+              return (
+                <>
+                  <Col xl={6} key={index}>
+                    <img src={item.photo} alt="" />
+                  </Col>
+                  <Col xl={6}>
+                    <h1>{item.name}</h1>
+                  </Col>
+                </>
+              );
+            })}
+          </Row>
         </Modal.Body>
       </Modal>
     </>

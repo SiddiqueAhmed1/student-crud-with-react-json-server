@@ -32,7 +32,10 @@ const ReactBoostrap = () => {
   const [editModalShow, setEditModalShow] = useState(false);
 
   // view modal state
-  const [viewModal, setViewModal] = useState(false);
+  const [viewModal, setViewModal] = useState(null);
+
+  // view student
+  const [viewStudent, setViewStudent] = useState({});
 
   //student form value taken
   const handleInputValue = (e) => {
@@ -132,11 +135,16 @@ const ReactBoostrap = () => {
   };
 
   // handle view modal show
-  const handleViewModalShow = (id) => {
-    const viewStu = students.find((data) => data.id === id);
-    setViewModal(true);
-    setStudents(viewStu);
+  const handleViewModalShow = async (id) => {
+    try {
+      const viewStu = await axios.get(`http://localhost:7070/students/${id}`);
+      setViewStudent(viewStu.data);
+      setViewModal(true);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   // handle view modal hide
   const handleViewModalHide = () => {
     setViewModal(false);
@@ -326,18 +334,20 @@ const ReactBoostrap = () => {
         </Modal.Header>
         <Modal.Body>
           <Row>
-            {students.map((item, index) => {
-              return (
-                <>
-                  <Col xl={6} key={index}>
-                    <img src={item.photo} alt="" />
-                  </Col>
-                  <Col xl={6}>
-                    <h1>{item.name}</h1>
-                  </Col>
-                </>
-              );
-            })}
+            <>
+              <Col xl={6}>
+                <img className="w-100" src={viewStudent.photo} alt="" />
+              </Col>
+              <Col xl={6}>
+                <h3 className="name-truncate" title={viewStudent.name}>
+                  {viewStudent.name.length > 10
+                    ? `${viewStudent.name.slice(0, 12)}...`
+                    : viewStudent.name}
+                </h3>
+                <h5>{viewStudent.roll}</h5>
+                <h5>{viewStudent.age}</h5>
+              </Col>
+            </>
           </Row>
         </Modal.Body>
       </Modal>

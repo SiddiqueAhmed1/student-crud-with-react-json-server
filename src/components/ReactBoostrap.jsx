@@ -10,6 +10,7 @@ import {
   Row,
   Table,
 } from "react-bootstrap";
+import './ReactBootstrap.css'
 import { FaEye, FaRegEdit, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 
@@ -32,10 +33,10 @@ const ReactBoostrap = () => {
   const [editModalShow, setEditModalShow] = useState(false);
 
   // view modal state
-  const [viewModal, setViewModal] = useState(null);
+  const [viewModal, setViewModal] = useState(false);
 
   // view student
-  const [viewStudent, setViewStudent] = useState({});
+  const [viewStudent, setViewStudent] = useState([]);
 
   //student form value taken
   const handleInputValue = (e) => {
@@ -102,11 +103,34 @@ const ReactBoostrap = () => {
   };
 
   // student delete
-  const handleStudentDelete = async (id) => {
-    await axios.delete(`http://localhost:7070/students/${id}`);
-
-    getAllStudents();
+  const handleStudentDelete = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`http://localhost:7070/students/${id}`);
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success"
+        });
+      }
+      getAllStudents();
+    });
+  
+    
   };
+
+  // protect student reRender
+  useEffect(() => {
+    getAllStudents();
+  }, []);
   // student edit modal show
   const handleEditModal = (id) => {
     setInput(students.find((data) => data.id === id));
@@ -149,11 +173,6 @@ const ReactBoostrap = () => {
   const handleViewModalHide = () => {
     setViewModal(false);
   };
-
-  // protect student reRender
-  useEffect(() => {
-    getAllStudents();
-  }, []);
 
   return (
     <>
@@ -340,7 +359,7 @@ const ReactBoostrap = () => {
               </Col>
               <Col xl={6}>
                 <h3 className="name-truncate" title={viewStudent.name}>
-                  {viewStudent.name.length > 10
+                  {viewStudent.name > 10
                     ? `${viewStudent.name.slice(0, 12)}...`
                     : viewStudent.name}
                 </h3>

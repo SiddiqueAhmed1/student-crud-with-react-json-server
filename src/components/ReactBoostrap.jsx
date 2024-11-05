@@ -10,7 +10,7 @@ import {
   Row,
   Table,
 } from "react-bootstrap";
-import './ReactBootstrap.css'
+import "./ReactBootstrap.css";
 import { FaEye, FaRegEdit, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 
@@ -36,7 +36,7 @@ const ReactBoostrap = () => {
   const [viewModal, setViewModal] = useState(false);
 
   // view student
-  const [viewStudent, setViewStudent] = useState([]);
+  const [viewStudent, setViewStudent] = useState({});
 
   //student form value taken
   const handleInputValue = (e) => {
@@ -111,20 +111,18 @@ const ReactBoostrap = () => {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
+      confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
         axios.delete(`http://localhost:7070/students/${id}`);
         Swal.fire({
           title: "Deleted!",
           text: "Your file has been deleted.",
-          icon: "success"
+          icon: "success",
         });
       }
       getAllStudents();
     });
-  
-    
   };
 
   // protect student reRender
@@ -152,10 +150,41 @@ const ReactBoostrap = () => {
   // student edit form submit
   const handleEditForm = async (e) => {
     e.preventDefault();
+    const editStu = students.find((students) => students.id === input.id);
 
-    await axios.patch(`http://localhost:7070/students/${input.id}`, input);
-    getAllStudents();
-    handleEditModalHide();
+    if (
+      input.name === editStu.name &&
+      input.roll === editStu.roll &&
+      input.age === editStu.age &&
+      input.photo === editStu.photo
+    ) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Nothing is changed here",
+      });
+    }else if(!input.name || !input.roll || !input.age || !input.photo){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "All fields are required!",
+      });
+    } else {
+      await axios.patch(`http://localhost:7070/students/${input.id}`, input);
+      getAllStudents();
+
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Student Update Succesfull",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+
+      setTimeout(() => {
+        handleEditModalHide();
+      }, 1000);
+    }
   };
 
   // handle view modal show
@@ -359,12 +388,12 @@ const ReactBoostrap = () => {
               </Col>
               <Col xl={6}>
                 <h3 className="name-truncate" title={viewStudent.name}>
-                  {viewStudent.name > 10
+                  {viewStudent.name && viewStudent.name.length > 10
                     ? `${viewStudent.name.slice(0, 12)}...`
                     : viewStudent.name}
                 </h3>
-                <h5>{viewStudent.roll}</h5>
-                <h5>{viewStudent.age}</h5>
+                <h5>Roll : {viewStudent.roll}</h5>
+                <h5>Age : {viewStudent.age}</h5>
               </Col>
             </>
           </Row>

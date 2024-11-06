@@ -50,12 +50,27 @@ const ReactBoostrap = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
+    const oldStu = (await axios.get("http://localhost:7070/students")).data;
+    const existStu = oldStu.find(
+      (student) =>
+        student.name === input.name ||
+        student.roll === input.roll ||
+        student.age === input.age ||
+        student.photo === input.photo
+    );
+
     // form validation
     if (!input.name || !input.age || !input.roll || !input.photo) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "All fields are required!",
+      });
+    } else if (existStu) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data already exists!",
       });
     } else {
       await axios.post("http://localhost:7070/students", input);
@@ -151,6 +166,7 @@ const ReactBoostrap = () => {
   const handleEditForm = async (e) => {
     e.preventDefault();
     const editStu = students.find((students) => students.id === input.id);
+    const existStu = students.find((item) =>  item.name === input.name || item.roll === input.roll || item.photo === input.photo)
 
     if (
       input.name === editStu.name &&
@@ -163,7 +179,13 @@ const ReactBoostrap = () => {
         title: "Oops...",
         text: "Nothing is changed here",
       });
-    }else if(!input.name || !input.roll || !input.age || !input.photo){
+    }else if(existStu){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Already exists!",
+      });
+    } else if (!input.name || !input.roll || !input.age || !input.photo) {
       Swal.fire({
         icon: "error",
         title: "Oops...",

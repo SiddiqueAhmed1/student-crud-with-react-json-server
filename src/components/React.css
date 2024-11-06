@@ -1,0 +1,21 @@
+.name-truncate {
+    position: relative;
+    display: inline-block;
+    overflow: hidden; /* Hide overflow */
+    white-space: nowrap; /* Prevent line break */
+    text-overflow: ellipsis; /* Add ellipsis */
+  }
+  
+  .name-truncate:hover::after {
+    content: attr(title); /* Use the title attribute as the tooltip */
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 4px;
+    white-space: nowrap; /* Prevent line break in tooltip */
+    z-index: 1;
+  }
+  

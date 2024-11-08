@@ -82,7 +82,7 @@ const ReactBoostrap = () => {
       });
       setTimeout(() => {
         handleModalHide();
-        getAllStudents();
+        getAllStudents().sort();
       }, 1000);
       setInput({
         name: "",
@@ -95,9 +95,15 @@ const ReactBoostrap = () => {
 
   // get all students
   const getAllStudents = async () => {
-    const allStudents = await axios.get("http://localhost:7070/students");
-
-    setStudents(allStudents.data);
+    const allStudents = await axios
+      .get("http://localhost:7070/students")
+      .then((response) => {
+        const sortedData = response.data.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+        return sortedData;
+      });
+    setStudents(allStudents);
   };
 
   //student add modal show
@@ -164,14 +170,15 @@ const ReactBoostrap = () => {
   // student edit form submit
   const handleEditForm = async (e) => {
     e.preventDefault();
-    const editStu = students.find((data) => data.id === input.id);
-    const existStu = students.filter((item) => item.id !== input.id).find(
-      (item) =>
-        item.name === input.name ||
-        item.roll === input.roll ||
-        item.age === input.age ||
-        item.photo === input.photo
-    );
+    const editStu = students.find((students) => students.id === input.id);
+    const existStu = students
+      .filter((data) => data.id !== input.id)
+      .find(
+        (item) =>
+          item.roll === input.roll ||
+          item.age === input.age ||
+          item.photo === input.photo
+      );
 
     if (
       input.name === editStu.name &&
@@ -184,17 +191,17 @@ const ReactBoostrap = () => {
         title: "Oops...",
         text: "Nothing is changed here",
       });
-    } else if (!input.name || !input.roll || !input.age || !input.photo) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "All fields are required!",
-      });
     } else if (existStu) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Already exists!",
+      });
+    } else if (!input.name || !input.roll || !input.age || !input.photo) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "All fields are required!",
       });
     } else {
       await axios.patch(`http://localhost:7070/students/${input.id}`, input);
